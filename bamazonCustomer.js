@@ -1,6 +1,8 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var itemIDArray = [];
+var chosenItem;
+var chosenQuantity;
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -31,7 +33,7 @@ function displayProducts() {
     for (var i = 0; i < res.length; i++) {
       // console.log(res);
       itemIDArray.push(res[i].item_id);
-    //   console.log(itemIDArray);
+      //   console.log(itemIDArray);
       console.log(
         "Item ID: " +
           res[i].item_id +
@@ -46,46 +48,75 @@ function displayProducts() {
       );
     }
     promptCustomer();
-    // connection.end();
+   
   });
 }
 
 function promptCustomer() {
-    inquirer
-    .prompt([{
-      name: "productID",
-      type: "input",
-      message: "What is the Item ID of the product you would like to buy?",
-    //   choices: ["POST", "BID"]
-    }, 
-    {
-      name: "productNumber",
-      type: "input",
-      message: "How many units of the product would you like to buy?"
-
-    }
+  inquirer
+    .prompt([
+      {
+        name: "productID",
+        type: "input",
+        message: "What is the Item ID of the product you would like to buy?"
+        
+      },
+      {
+        name: "productNumber",
+        type: "input",
+        message: "How many units of the product would you like to buy?"
+      }
     ])
 
     .then(function(answer) {
-      // based on their answer, either call the bid or the post functions
-      var chosenItem;
-      for (var i = 0; i < itemIDArray.length; i++){
-          if (itemIDArray[i] == answer.productID) {
-            chosenItem = itemIDArray[i];
-            console.log(chosenItem + "this works");
-            break;
-           
-        
-          }
-          
-          }
-        if (typeof chosenItem === "undefined"){
-            console.log("No product exists with that ID. Please pick another.")
-            promptCustomer();
-        }
-
-        }
      
 
+      for (var i = 0; i < itemIDArray.length; i++) {
+        if (itemIDArray[i] == answer.productID) {
+          chosenItem = itemIDArray[i];
+          chosenQuantity = parseInt(answer.productNumber);
+          console.log("total is " + chosenQuantity);
+          console.log(chosenItem + "this works");
+          checkStore();
+          break;
+        }
+      }
+      if (typeof chosenItem === "undefined") {
+        console.log(
+          "No product exists with that ID. Please pick another product."
+        );
+        promptCustomer();
+      }
+    });
+}
 
-    )};
+function checkStore() {
+  console.log("yep");
+  connection.query(
+    "SELECT * FROM PRODUCTS WHERE ?",
+    {
+      item_id: chosenItem
+    },
+    function(err, res) {
+      if (err) throw err;
+    //   console.log(res);
+    //   console.log(res[0].stock_quantity);
+      if (res[0].stock_quantity < chosenQuantity) {
+        console.log(
+          "Insufficient Quantity! There are only " +
+            res[0].stock_quantity +
+            " available. Please reenter the quantity you want to buy."
+        );
+        promptCustomer();
+      } else {
+        fufillOrder();
+      }
+    }
+  );
+
+  
+}
+
+function fufillOrder() {
+
+}
