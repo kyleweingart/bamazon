@@ -111,6 +111,8 @@ function checkStore() {
       } else {
         fufillOrder();
       }
+    var totalPrice = res[0].price * chosenQuantity;
+    console.log("Total Price for your order is: " + totalPrice);
     }
   );
 
@@ -118,5 +120,23 @@ function checkStore() {
 }
 
 function fufillOrder() {
+    console.log("Fufilling customer order...\n");
+  var query = connection.query(
+    "UPDATE products SET stock_quantity = stock_quantity - chosenQuantity WHERE item_id = chosenItem",
+    // [
+    //   {
+    //     // stock_quantity: stock_quantity - chosenQuantity
+    //     stock_quantity: 10
+    //   },
+    //   {
+    //     item_id: chosenItem
+    //   }
+    // ],
+    function(err, res) {
+      console.log(res.affectedRows + " products updated!\n");
+    //   console.log(res.stock_quantity);
+    }
+  );
+
 
 }
