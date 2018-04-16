@@ -1,4 +1,6 @@
 var mysql = require("mysql");
+var inquirer = require("inquirer");
+var itemIDArray = [];
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -28,6 +30,8 @@ function displayProducts() {
     );
     for (var i = 0; i < res.length; i++) {
       // console.log(res);
+      itemIDArray.push(res[i].item_id);
+    //   console.log(itemIDArray);
       console.log(
         "Item ID: " +
           res[i].item_id +
@@ -41,27 +45,47 @@ function displayProducts() {
           "==============================="
       );
     }
+    promptCustomer();
     // connection.end();
   });
 }
 
 function promptCustomer() {
     inquirer
-    .prompt({
+    .prompt([{
       name: "productID",
       type: "input",
       message: "What is the Item ID of the product you would like to buy?",
     //   choices: ["POST", "BID"]
-    })
+    }, 
+    {
+      name: "productNumber",
+      type: "input",
+      message: "How many units of the product would you like to buy?"
+
+    }
+    ])
+
     .then(function(answer) {
       // based on their answer, either call the bid or the post functions
-      if (answer.postOrBid.toUpperCase() === "POST") {
-        postAuction();
-      }
-      else {
-        bidAuction();
-      }
-    });
-}
+      var chosenItem;
+      for (var i = 0; i < itemIDArray.length; i++){
+          if (itemIDArray[i] == answer.productID) {
+            chosenItem = itemIDArray[i];
+            console.log(chosenItem + "this works");
+            break;
+           
+        
+          }
+          
+          }
+        if (typeof chosenItem === "undefined"){
+            console.log("No product exists with that ID. Please pick another.")
+            promptCustomer();
+        }
+
+        }
+     
 
 
+    )};
