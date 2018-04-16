@@ -21,7 +21,14 @@ connection.connect(function(err) {
 function displayProducts() {
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
-    console.log(res);
+    console.log("Items Available for Sale:" + '\n' + "=======================================")
+    for (var i = 0; i < res.length; i++) {
+    // console.log(res);
+    console.log("Item ID: " + res[i].item_id + '\n' + "Product Name: " + res[i].product_name + '\n' +  "Price: " + res[i].price + '\n' + "===============================" )
+
+
+    
+    }
     connection.end();
   });
 }
