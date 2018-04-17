@@ -1,8 +1,20 @@
+// REQUIRE PACKAGES
+// ======================================================================================
+
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+
+// DECLARE VARIABLES
+// ======================================================================================
+
 var itemIDArray = [];
 var chosenItem;
 var chosenQuantity;
+var stockQuantity;
+var totalPrice;
+
+// CREATE DATABASE CONNECTION
+// =======================================================================================
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -21,6 +33,9 @@ connection.connect(function(err) {
   console.log("connected as id " + connection.threadId);
   displayProducts();
 });
+
+// FUNCTIONS
+// ==========================================================================================
 
 function displayProducts() {
   connection.query("SELECT * FROM products", function(err, res) {
@@ -48,7 +63,6 @@ function displayProducts() {
       );
     }
     promptCustomer();
-   
   });
 }
 
@@ -59,7 +73,6 @@ function promptCustomer() {
         name: "productID",
         type: "input",
         message: "What is the Item ID of the product you would like to buy?"
-        
       },
       {
         name: "productNumber",
@@ -69,8 +82,6 @@ function promptCustomer() {
     ])
 
     .then(function(answer) {
-     
-
       for (var i = 0; i < itemIDArray.length; i++) {
         if (itemIDArray[i] == answer.productID) {
           chosenItem = itemIDArray[i];
@@ -99,8 +110,10 @@ function checkStore() {
     },
     function(err, res) {
       if (err) throw err;
-    //   console.log(res);
-    //   console.log(res[0].stock_quantity);
+      stockQuantity = res[0].stock_quantity;
+      console.log(stockQuantity);
+      //   console.log(res);
+      //   console.log(res[0].stock_quantity);
       if (res[0].stock_quantity < chosenQuantity) {
         console.log(
           "Insufficient Quantity! There are only " +
@@ -111,32 +124,31 @@ function checkStore() {
       } else {
         fufillOrder();
       }
-    var totalPrice = res[0].price * chosenQuantity;
-    console.log("Total Price for your order is: " + totalPrice);
+      totalPrice = res[0].price * chosenQuantity;
     }
   );
-
-  
 }
 
 function fufillOrder() {
-    console.log("Fufilling customer order...\n");
+  console.log("Fufilling customer order...\n");
   var query = connection.query(
-    "UPDATE products SET stock_quantity = stock_quantity - chosenQuantity WHERE item_id = chosenItem",
-    // [
-    //   {
-    //     // stock_quantity: stock_quantity - chosenQuantity
-    //     stock_quantity: 10
-    //   },
-    //   {
-    //     item_id: chosenItem
-    //   }
-    // ],
+    "UPDATE products SET ? WHERE ?",
+    [
+      {
+        stock_quantity: stockQuantity - chosenQuantity
+      },
+      {
+        item_id: chosenItem
+      }
+    ],
     function(err, res) {
-      console.log(res.affectedRows + " products updated!\n");
-    //   console.log(res.stock_quantity);
+      console.log(
+        "Total Price for your order is $" +
+          totalPrice +
+          "\n" +
+          res.affectedRows +
+          " products updated!"
+      );
     }
   );
-
-
 }
