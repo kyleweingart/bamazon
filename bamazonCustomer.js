@@ -30,7 +30,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId);
+  // console.log("connected as id " + connection.threadId);
   displayProducts();
 });
 
@@ -86,8 +86,6 @@ function promptCustomer() {
         if (itemIDArray[i] == answer.productID) {
           chosenItem = itemIDArray[i];
           chosenQuantity = parseInt(answer.productNumber);
-          console.log("total is " + chosenQuantity);
-          console.log(chosenItem + "this works");
           checkStore();
           break;
         }
@@ -102,7 +100,6 @@ function promptCustomer() {
 }
 
 function checkStore() {
-  console.log("yep");
   connection.query(
     "SELECT * FROM PRODUCTS WHERE ?",
     {
@@ -111,9 +108,6 @@ function checkStore() {
     function(err, res) {
       if (err) throw err;
       stockQuantity = res[0].stock_quantity;
-      console.log(stockQuantity);
-      //   console.log(res);
-      //   console.log(res[0].stock_quantity);
       if (res[0].stock_quantity < chosenQuantity) {
         console.log(
           "Insufficient Quantity! There are only " +
@@ -130,7 +124,7 @@ function checkStore() {
 }
 
 function fufillOrder() {
-  console.log("Fufilling customer order...\n");
+  console.log("Fufilling customer order... " + "\n" + "==============================" );
   var query = connection.query(
     "UPDATE products SET ? WHERE ?",
     [
@@ -145,7 +139,7 @@ function fufillOrder() {
       console.log(
         "Total Price for your order is $" +
           totalPrice +
-          "\n" +
+          "\n" + "==============================" + "\n" +
           res.affectedRows +
           " products updated!"
       );
