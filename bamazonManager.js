@@ -76,9 +76,7 @@ function productsView() {
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
     console.log(
-      "Product Inventory:" +
-        "\n" +
-        "======================================="
+      "Product Inventory:" + "\n" + "======================================="
     );
     for (var i = 0; i < res.length; i++) {
       // console.log(res);
@@ -104,40 +102,53 @@ function productsView() {
 }
 
 function lowInventoryView() {
-//   console.log("lowinventoryView function");
-inquirer
-    .prompt(
-      {
-        name: "productNumber",
-        type: "input",
-        message: "What number would you like to use to check inventory quantities?"
-      }
-    )
+  //   console.log("lowinventoryView function");
+  inquirer
+    .prompt({
+      name: "productNumber",
+      type: "input",
+      message:
+        "What number would you like to use to check inventory quantities?"
+    })
 
     .then(function(answer) {
-      
-          chosenQuantity = parseInt(answer.productNumber);
-          
-      })
-
-  connection.query(
-    "SELECT * FROM PRODUCTS WHERE stock_quantity < chosenQuantity",
-    // how do i do this with less than?
-    // {
-    //   stock_quantity: < chosenQuantity
-    // },
-    function(err, res) {
-      if (err) throw err;
-      stockQuantity = res[0].stock_quantity;
-      if (res[0].stock_quantity < chosenQuantity) {
-        console.log(
-          "Insufficient Quantity! There are only " +
-            res[0].stock_quantity +
-            " available. Please reenter the quantity you want to buy."
-        );
-    }
-})
-
+      chosenQuantity = parseInt(answer.productNumber);
+      connection.query(
+        "SELECT * FROM `PRODUCTS` WHERE `stock_quantity` <= ?",
+        [chosenQuantity],
+        // how do i do this with less than?
+        // {
+        //   stock_quantity: < chosenQuantity
+        // },
+        function(err, res) {
+          if (err) throw err;
+          console.log(res.length);
+          //   stockQuantity = res[0].stock_quantity;
+          if (res.length === 0) {
+            console.log("There are currently no products with a low inventory");
+          } else {
+            for (var i = 0; i < res.length; i++) {
+              // console.log(res);
+              // itemIDArray.push(res[i].item_id);
+              //   console.log(itemIDArray);
+              console.log(
+                "Item ID: " +
+                  res[i].item_id +
+                  "\n" +
+                  "Product Name: " +
+                  res[i].product_name +
+                  "\n" +
+                  "Quantity: " +
+                  res[i].stock_quantity +
+                  "\n" +
+                  "==============================="
+              );
+            }
+          }
+        }
+      );
+    });
+}
 
 function addInventory() {
   console.log("addInventory function");
