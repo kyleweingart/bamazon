@@ -141,7 +141,7 @@ function fufillOrder() {
           totalPrice +
           "\n" + "==============================" + "\n" +
           res.affectedRows +
-          " products updated!"
+          " product updated!"
       );
     }
   );
