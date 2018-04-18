@@ -44,32 +44,47 @@ function displayMenuOptions() {
         type: "list",
         message: "What would you like to do?",
         choices: [
-          "Find songs by artist",
-          "Find all artists who appear more than once",
-          "Find data within a specific range",
-          "Search for a specific song"
+          "View Products for Sale",
+          "View Low Inventory",
+          "Add to Inventory",
+          "Add New Product"
         ]
       })
       .then(function(answer) {
         switch (answer.action) {
-        case "Find songs by artist":
-          artistSearch();
+        case "View Products for Sale":
+          productsView();
           break;
   
-        case "Find all artists who appear more than once":
-          multiSearch();
+        case "View Low Inventory":
+          lowInventoryView();
           break;
   
-        case "Find data within a specific range":
-          rangeSearch();
+        case "Add to Inventory":
+          addInventory();
           break;
   
-        case "Search for a specific song":
-          songSearch();
+        case "Add New Product":
+          addProduct();
           break;
         }
       });
   }
+
+ function productsView() {
+      console.log("productsView function");
+  }
   
+  function lowInventoryView() {
+    console.log("lowinventoryView function");
+}
+
+function addInventory() {
+    console.log("addInventory function");
+}
+
+function addProduct() {
+    console.log("addProduct function");
+}
 
 
