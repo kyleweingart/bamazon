@@ -116,10 +116,6 @@ function lowInventoryView() {
       connection.query(
         "SELECT * FROM `PRODUCTS` WHERE `stock_quantity` <= ?",
         [chosenQuantity],
-        // how do i do this with less than?
-        // {
-        //   stock_quantity: < chosenQuantity
-        // },
         function(err, res) {
           if (err) throw err;
           console.log(res.length);
@@ -151,8 +147,70 @@ function lowInventoryView() {
 }
 
 function addInventory() {
-  console.log("addInventory function");
+  inquirer
+    .prompt([
+      {
+        name: "productName",
+        type: "input",
+        message: "What product would you like to add inventory to?"
+      },
+      {
+        name: "productQuantity",
+        type: "input",
+        message: "How much inventory would you like to add?"
+      }
+    ])
+
+    .then(function(answer) {
+      chosenProduct = answer.productName;
+      chosenQuantity = answer.productQuantity;
+      connection.query(
+        "UPDATE `PRODUCTS` SET `stock_quantity` = `stock_quantity` + ? WHERE `product_name` = ?",
+        [chosenQuantity, chosenProduct],
+        function(err, res) {
+          if (err) throw err;
+
+          console.log(res.affectedRows);
+        // THIS is where I'm currently at- I need to make sure the query is working and then display the update. I tested and it seems to update
+        // the database but there are issues and may need some debugging/error validation for user inputs. 
+
+        //   console.log(
+        //     "Item ID: " +
+        //       res[0].item_id +
+        //       "\n" +
+        //       "Product Name: " +
+        //       res[0].product_name +
+        //       "\n" +
+        //       "Quantity: " +
+        //       res[0].stock_quantity +
+        //       "\n" +
+        //       "==============================="
+        //   );
+        }
+      );
+    });
 }
+
+// connection.query(
+//     "UPDATE products SET ? WHERE ?",
+//     [
+//       {
+//         stock_quantity: stockQuantity - chosenQuantity
+//       },
+//       {
+//         product_name: chosenItem
+//       }
+//     ],
+//     function(err, res) {
+//       console.log(
+//         "Total Price for your order is $" +
+//           totalPrice +
+//           "\n" + "==============================" + "\n" +
+//           res.affectedRows +
+//           " product updated!"
+//       );
+//     }
+//   );
 
 function addProduct() {
   console.log("addProduct function");
